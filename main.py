@@ -17,9 +17,7 @@ async def root():
 
 @app.get("/weather/{lat}/{lon}")
 async def get_weather(lat: float, lon: float):
-     print(f"API_KEY is set: {API_KEY is not None}")
-     print(f"API_KEY length: {len(API_KEY) if API_KEY else 0}")
-     print(f"Requesting weather for: {lat}, {lon}")
+     """"Get current weather data for specific coordiantes"""
 
      if not API_KEY:
           raise HTTPException(status_code=500, detail="API key not configured")
