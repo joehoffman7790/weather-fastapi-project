@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .weather-result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            display: none;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌤️ Weather Dashboard</h1>
+
+        <label>Latitude:</label>
+        <input type="number" id="lat" placeholder="40.7128" step="any">
+
+        <label>Longitude:</label>
+        <input type="number" id="lon" placeholder="-74.0060" step="any">
+
+        <button onclick="getWeather()">Get Weather</button>
+
+        <div class="error" id="error"></div>
+
+        <div class="weather-result" id="result">
+            <h2 id="location"></h2>
+            <p><strong>Temperature:</strong> <span id="temp"></span>°F</p>
+            <p><strong>Feels Like:</strong> <span id="feels_like"></span>°F</p>
+            <p><strong>Conditions:</strong> <span id="conditions"></span></p>
+            <p><strong>Humidity:</strong> <span id="humidity"></span>%</p>
+            <p><strong>Wind Speed:</strong> <span id="wind"></span> mph</p>
+        </div>
+    </div>
+
+    <script>
+        async function getWeather() {
+            const lat = document.getElementById('lat').value;
+            const lon = document.getElementById('lon').value;
+            const errorDiv = document.getElementById('error');
+            const resultDiv = document.getElementById('result');
+
+            // Clear previous results
+            errorDiv.textContent = '';
+            resultDiv.style.display = 'none';
+
+            if (!lat || !lon) {
+                errorDiv.textContent = 'Please enter both latitude and longitude';
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8000/weather/${lat}/${lon}`);
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch weather data');
+                }
+
+                const data = await response.json();
+
+                // Display results
+                document.getElementById('location').textContent = data.name || 'Unknown Location';
+                document.getElementById('temp').textContent = data.main.temp;
+                document.getElementById('feels_like').textContent = data.main.feels_like;
+                document.getElementById('conditions').textContent = data.weather[0].description;
+                document.getElementById('humidity').textContent = data.main.humidity;
+                document.getElementById('wind').textContent = data.wind.speed;
+
+                resultDiv.style.display = 'block';
+
+            } catch (error) {
+                errorDiv.textContent = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
