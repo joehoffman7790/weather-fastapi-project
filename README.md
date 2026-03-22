@@ -11,13 +11,15 @@ This project is designed to practice:
 3. **Development Lifecycle** - Following structured development practices from planning to deployment
 4. **DevOps Automation** - Implementing CI/CD pipelines to automate testing and deployment
 
+
 ## Tech Stack
 
 - **Backend**: FastAPI (Python)
 - **API Integration**: OpenWeatherMap API (or your chosen weather service)
 - **Development**: WSL2 Ubuntu and PyCharm Pro
 - **Version Control**: Git/GitHub
-
+- Containerize the application via Docker
+  
 ## Getting Started
 
 ### Prerequisites
@@ -25,6 +27,7 @@ This project is designed to practice:
 - Python 3.8+
 - pip for dependency management
 - API key from weather service provider
+- Docker installation
 
 ### Installation
 ```bash
@@ -77,13 +80,7 @@ weather-fastapi/
 
 ## Future Enhancements
 
-- [ ] Frontend dashboard
 - [ ] CI/CD pipeline with GitHub Actions
-- [ ] Docker containerization
 - [ ] Automated testing
 - [ ] Multiple weather API integrations
-
-## License
-
-Personal learning project
 	
