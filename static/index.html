@@ -24,6 +24,7 @@
             margin: 10px 0;
             border: 1px solid #ddd;
             border-radius: 5px;
+            box-sizing: border-box;
         }
         button {
             width: 100%;
@@ -34,6 +35,7 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
+            margin-top: 10px;
         }
         button:hover {
             background: #0056b3;
@@ -49,22 +51,69 @@
             color: red;
             margin-top: 10px;
         }
+        .divider {
+            margin: 30px 0;
+            border-top: 2px solid #ddd;
+            position: relative;
+        }
+        .divider span {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 0 10px;
+            color: #666;
+            font-size: 14px;
+        }
+        .section-title {
+            color: #333;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🌤️ Weather Dashboard</h1>
 
-        <label>Latitude:</label>
-        <input type="number" id="lat" placeholder="40.7128" step="any">
+        <!-- City Search Section -->
+        <div>
+            <h3 class="section-title">Search by City</h3>
 
-        <label>Longitude:</label>
-        <input type="number" id="lon" placeholder="-74.0060" step="any">
+            <label>City:</label>
+            <input type="text" id="city" placeholder="New York">
 
-        <button onclick="getWeather()">Get Weather</button>
+            <label>State (optional):</label>
+            <input type="text" id="state" placeholder="NY">
 
+            <label>Country (optional):</label>
+            <input type="text" id="country" placeholder="US">
+
+            <button onclick="getWeatherByCity()">Search by City</button>
+        </div>
+
+        <!-- Divider -->
+        <div class="divider">
+            <span>OR</span>
+        </div>
+
+        <!-- Coordinate Search Section -->
+        <div>
+            <h3 class="section-title">Search by Coordinates</h3>
+
+            <label>Latitude:</label>
+            <input type="number" id="lat" placeholder="40.7128" step="any">
+
+            <label>Longitude:</label>
+            <input type="number" id="lon" placeholder="-74.0060" step="any">
+
+            <button onclick="getWeatherByCoordinates()">Search by Coordinates</button>
+        </div>
+
+        <!-- Error Display -->
         <div class="error" id="error"></div>
 
+        <!-- Weather Result Display -->
         <div class="weather-result" id="result">
             <h2 id="location"></h2>
             <p><strong>Temperature:</strong> <span id="temp"></span>°F</p>
@@ -76,7 +125,70 @@
     </div>
 
     <script>
-        async function getWeather() {
+        function displayWeather(data) {
+            const resultDiv = document.getElementById('result');
+
+            // Handle location display
+            let locationText = data.name || 'Unknown Location';
+            if (data.geocoded_location) {
+                locationText = data.geocoded_location.name;
+                if (data.geocoded_location.state) {
+                    locationText += ', ' + data.geocoded_location.state;
+                }
+                locationText += ', ' + data.geocoded_location.country;
+            }
+
+            document.getElementById('location').textContent = locationText;
+            document.getElementById('temp').textContent = data.main.temp;
+            document.getElementById('feels_like').textContent = data.main.feels_like;
+            document.getElementById('conditions').textContent = data.weather[0].description;
+            document.getElementById('humidity').textContent = data.main.humidity;
+            document.getElementById('wind').textContent = data.wind.speed;
+
+            resultDiv.style.display = 'block';
+        }
+
+        async function getWeatherByCity() {
+            const city = document.getElementById('city').value;
+            const state = document.getElementById('state').value;
+            const country = document.getElementById('country').value;
+            const errorDiv = document.getElementById('error');
+            const resultDiv = document.getElementById('result');
+
+            // Clear previous results
+            errorDiv.textContent = '';
+            resultDiv.style.display = 'none';
+
+            if (!city) {
+                errorDiv.textContent = 'Please enter a city name';
+                return;
+            }
+
+            // Build query string with city as query parameter
+            const params = new URLSearchParams();
+            params.append('city', city);
+            if (state) params.append('state', state);
+            if (country) params.append('country', country);
+
+            const url = `/weather/city?${params.toString()}`;
+
+            try {
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Failed to fetch weather data');
+                }
+
+                const data = await response.json();
+                displayWeather(data);
+
+            } catch (error) {
+                errorDiv.textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function getWeatherByCoordinates() {
             const lat = document.getElementById('lat').value;
             const lon = document.getElementById('lon').value;
             const errorDiv = document.getElementById('error');
@@ -92,23 +204,14 @@
             }
 
             try {
-                const response = await fetch(`http://localhost:8000/weather/${lat}/${lon}`);
+                const response = await fetch(`/weather/${lat}/${lon}`);
 
                 if (!response.ok) {
                     throw new Error('Failed to fetch weather data');
                 }
 
                 const data = await response.json();
-
-                // Display results
-                document.getElementById('location').textContent = data.name || 'Unknown Location';
-                document.getElementById('temp').textContent = data.main.temp;
-                document.getElementById('feels_like').textContent = data.main.feels_like;
-                document.getElementById('conditions').textContent = data.weather[0].description;
-                document.getElementById('humidity').textContent = data.main.humidity;
-                document.getElementById('wind').textContent = data.wind.speed;
-
-                resultDiv.style.display = 'block';
+                displayWeather(data);
 
             } catch (error) {
                 errorDiv.textContent = 'Error: ' + error.message;
