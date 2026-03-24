@@ -97,13 +97,53 @@ weather-fastapi/
 
 ---
 
-##  API Endpoints
+## API Endpoints
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/` | Serves the HTML frontend dashboard |
-| `GET` | `/weather?city={city}` | Current weather for a given city (JSON) |
-| `GET` | `/docs` | Auto-generated interactive API docs (Swagger UI) |
+| Method | Endpoint | Description | Parameters |
+|--------|----------|-------------|------------|
+| `GET` | `/` | Serves the HTML frontend dashboard | None |
+| `GET` | `/weather/{lat}/{lon}` | Current weather by coordinates (JSON) | `lat` (float), `lon` (float) |
+| `GET` | `/weather/city` | Current weather by city name (JSON) | `city` (required), `state` (optional), `country` (optional) |
+| `GET` | `/docs` | Auto-generated interactive API docs (Swagger UI) | None |
+
+### Examples
+
+**Search by coordinates:**
+```
+GET /weather/40.7128/-74.0060
+```
+
+**Search by city:**
+```
+GET /weather/city?city=London&country=UK
+GET /weather/city?city=Austin&state=TX&country=US
+GET /weather/city?city=New York&state=NY&country=US
+GET /weather/city?city=Paris
+```
+
+**Response Format:**
+```json
+{
+  "coord": {"lon": -74.006, "lat": 40.7128},
+  "weather": [{"id": 800, "main": "Clear", "description": "clear sky"}],
+  "main": {
+    "temp": 33.57,
+    "feels_like": 24.96,
+    "humidity": 66
+  },
+  "wind": {"speed": 11.5},
+  "name": "New York",
+  "geocoded_location": {
+    "name": "New York",
+    "state": "New York",
+    "country": "US",
+    "lat": 40.7128,
+    "lon": -74.006
+  }
+}
+```
+
+Note: `geocoded_location` only appears in city-based search responses.
 
 ---
 
