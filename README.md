@@ -1,6 +1,6 @@
 # 🌤️ Weather FastAPI Dashboard
 
-A containerized REST API backend for real-time weather reporting, built as a hands-on learning project to develop practical Python, API integration, and DevOps skills.
+A full-stack, containerized weather dashboard for real-time weather reporting, built as a hands-on learning project to develop practical Python, API integration, and DevOps skills.
 
 > **Status:** Mostly complete — core API and Docker setup are functional. CI/CD and cloud deployment are next on the roadmap.
 
