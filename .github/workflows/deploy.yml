@@ -11,63 +11,74 @@ env:
   IMAGE_NAME: weather-api
 
 jobs:
-  lint-and-test:
+
+  # ── 1. SPLIT: lint is its own job now ─────────────────────────────────────
+  lint:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install pytest pytest-asyncio ruff black
+      - name: Install ruff
+        run: pip install ruff          # black is gone — ruff covers format checking too
 
-    - name: Lint with Ruff
-      run: ruff check .
+      - name: Lint with ruff
+        run: ruff check .
 
-    - name: Format check with Black
-      run: black --check .
+      - name: Format check with ruff  # replaces: black --check .
+        run: ruff format --check .
 
-    - name: Run tests
-      env:
-        OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
-      run: pytest tests/ -v
+  # ── 2. Tests stay separate — no need to bundle with lint ──────────────────
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio
+
+      - name: Run tests
+        env:
+          OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
+        run: pytest tests/ -v
+
+  # ── 3. BUILD + DEPLOY: azure/login + az webapp restart → webapps-deploy ──
   build-and-deploy:
-    needs: lint-and-test
+    needs: [ lint, test ]             # both must pass before deploy runs
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Log in to Azure Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ secrets.ACR_USERNAME }}
-        password: ${{ secrets.ACR_PASSWORD }}
+      - name: Log in to Azure Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
 
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: true
-        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
-    - name: Azure Login
-      uses: azure/login@v2
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-    - name: Restart Azure Web App
-      run: |
-        az webapp restart \
-          --name weather-fastapi-joeh6790 \
-          --resource-group weather-api-rg
+      - name: Deploy to Azure Web App  # replaces: azure/login + az webapp restart
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: weather-fastapi-joeh6790
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
