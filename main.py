@@ -85,7 +85,7 @@ async def get_weather(lat: float, lon: float):
             raise HTTPException(status_code=500, detail=f"Error fetching weather: {str(e)}")
 
 
-@app.get("/weather/city/")
+@app.get("/weather/city")
 async def get_weather_by_city(
         city: str,
         state: Optional[str] = None,
