@@ -1,9 +1,10 @@
+import os
+from typing import Optional
+
+import httpx
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-import httpx
-import os
-from typing import Optional
 
 # Create the FastAPI app
 app = FastAPI()
@@ -29,11 +30,7 @@ async def geocode_location(city: str, state: Optional[str] = None, country: Opti
 
     query = ",".join(query_parts)
 
-    params = {
-        "q": query,
-        "limit": 1,
-        "appid": API_KEY
-    }
+    params = {"q": query, "limit": 1, "appid": API_KEY}
 
     async with httpx.AsyncClient() as client:
         try:
@@ -50,7 +47,7 @@ async def geocode_location(city: str, state: Optional[str] = None, country: Opti
                 "state": location.get("state"),
                 "country": location.get("country"),
                 "lat": location["lat"],
-                "lon": location["lon"]
+                "lon": location["lon"],
             }
         except httpx.HTTPError as e:
             raise HTTPException(status_code=500, detail=f"Error geocoding location: {str(e)}")
@@ -69,12 +66,7 @@ async def get_weather(lat: float, lon: float):
     if not API_KEY:
         raise HTTPException(status_code=500, detail="API key not configured")
 
-    params = {
-        "lat": lat,
-        "lon": lon,
-        "appid": API_KEY,
-        "units": "imperial"
-    }
+    params = {"lat": lat, "lon": lon, "appid": API_KEY, "units": "imperial"}
 
     async with httpx.AsyncClient() as client:
         try:
@@ -86,11 +78,7 @@ async def get_weather(lat: float, lon: float):
 
 
 @app.get("/weather/city")
-async def get_weather_by_city(
-        city: str,
-        state: Optional[str] = None,
-        country: Optional[str] = None
-):
+async def get_weather_by_city(city: str, state: Optional[str] = None, country: Optional[str] = None):
     """Get weather by city name with optional state and country filters
 
     Examples:
@@ -106,12 +94,7 @@ async def get_weather_by_city(
     location = await geocode_location(city, state, country)
 
     # Get weather for those coordinates
-    params = {
-        "lat": location["lat"],
-        "lon": location["lon"],
-        "appid": API_KEY,
-        "units": "imperial"
-    }
+    params = {"lat": location["lat"], "lon": location["lon"], "appid": API_KEY, "units": "imperial"}
 
     async with httpx.AsyncClient() as client:
         try:
@@ -125,41 +108,6 @@ async def get_weather_by_city(
             return weather_data
         except httpx.HTTPError as e:
             raise HTTPException(status_code=500, detail=f"Error fetching weather: {str(e)}")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # @app.get("/")
@@ -190,4 +138,3 @@ async def get_weather_by_city(
 #         except httpx.HTTPError as e:
 #             raise HTTPException(status_code=500, detail=f"Error fetching weather: {str(e)}")
 #
-
