@@ -119,7 +119,6 @@ weather-fastapi/
 ├── Dockerfile           # Container build instructions
 ├── .dockerignore        # Files excluded from Docker build context
 ├── .env                 # Local environment variables (never committed)
-├── .env.example         # Environment variable template
 ├── .gitignore           # Git ignore rules
 ├── terraform/           # Azure infrastructure definitions
 │   ├── main.tf
