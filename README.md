@@ -58,59 +58,6 @@ A full-stack, containerized weather dashboard delivering real-time weather data 
 
 ---
 
-## Getting Started
-
-### Prerequisites
-
-- Python 3.8+
-- Docker (recommended for local parity with production)
-- OpenWeatherMap API key → [get one free here](https://openweathermap.org/api)
-
-### Option 1: Run with Docker (recommended)
-
-```bash
-# Clone the repo
-git clone <your-repo-url>
-cd weather-fastapi
-
-# Copy and configure environment variables
-cp .env.example .env
-# Edit .env and add your OPENWEATHER_API_KEY
-
-# Build and run the container
-docker build -t weather-fastapi .
-docker run -p 8000:8000 --env-file .env weather-fastapi
-```
-
-### Option 2: Run locally
-
-```bash
-# Clone the repo
-git clone <your-repo-url>
-cd weather-fastapi
-
-# Create and activate a virtual environment
-python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Configure environment variables
-cp .env.example .env
-# Edit .env and add your OPENWEATHER_API_KEY
-
-# Start the dev server
-uvicorn main:app --reload
-```
-
-API available at: `http://localhost:8000`
-Interactive docs at: `http://localhost:8000/docs`
-
----
-
-## Project Structure
-
 ```
 weather-fastapi/
 ├── main.py              # FastAPI app — routes, API integration, static file serving
@@ -196,24 +143,6 @@ Push to main or master
     └── Deploy to Azure (App Service + Container Instances)
 ```
 
-Infrastructure is defined and version-controlled in Terraform under `/terraform`, enabling reproducible, auditable Azure provisioning.
-
----
-
-## Development Workflow
-
-```
-feature branch → local dev & test → commit → pull request → merge to main → CI/CD auto-deploys
-```
-
-1. Branch off `main` for each new feature or fix
-2. Develop and test locally (or in Docker)
-3. Write descriptive commit messages
-4. Open a pull request and review before merging
-5. Merge triggers the GitHub Actions pipeline automatically
-
----
-
 ## Roadmap
 
 - [x] FastAPI backend with OpenWeatherMap integration
@@ -241,4 +170,4 @@ Building this end-to-end sharpened several skills that translate directly to pro
 
 ---
 
-*Built as part of a self-directed learning path toward automation engineering — focused on understanding the "why" behind every layer of the stack.*
+*Built as part of a self-directed learning path — focused on understanding the "why" behind every layer of the stack.*
