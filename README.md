@@ -1,32 +1,60 @@
 # 🌤️ Weather FastAPI Dashboard
 
-A full-stack, containerized weather dashboard for real-time weather reporting, built as a hands-on learning project to develop practical Python, API integration, and DevOps skills.
+![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?style=flat&logo=fastapi&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=flat&logo=docker&logoColor=white)
+![Azure](https://img.shields.io/badge/Azure-Deployed-0078D4?style=flat&logo=microsoftazure&logoColor=white)
+![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?style=flat&logo=githubactions&logoColor=white)
+![Terraform](https://img.shields.io/badge/IaC-Terraform-7B42BC?style=flat&logo=terraform&logoColor=white)
+![Status](https://img.shields.io/badge/Status-Production-brightgreen?style=flat)
 
-> **Status:** Mostly complete — core API and Docker setup are functional. CI/CD and cloud deployment are next on the roadmap.
+A full-stack, containerized weather dashboard delivering real-time weather data via a FastAPI backend and a lightweight HTML/CSS/JS frontend. Built end-to-end as a hands-on learning project — from local development to Dockerized deployment on Azure, with a fully automated CI/CD pipeline managed through GitHub Actions and infrastructure provisioned via Terraform.
 
 ---
 
-## Learning Objectives
+## Architecture Overview
 
-This project was built to practice real-world engineering skills in a contained, deployable context:
-
-| Area | What I Practiced |
-|---|---|
-| **REST API Development** | Building a FastAPI backend integrated with a live external weather API |
-| **Containerization** | Packaging the app with Docker for consistent, portable environments |
-| **Version Control** | Structured Git workflows — branching, commits, pull requests |
-| **DevOps Foundation** | Local dev → Docker → (next) CI/CD pipeline |
+```
+┌──────────────────────────────────────────────────────────┐
+│                    GitHub Actions CI/CD                   │
+│   Lint → Test → Build Docker Image → Push → Deploy       │
+└────────────────────────┬─────────────────────────────────┘
+                         │
+          ┌──────────────▼──────────────┐
+          │        Azure Container      │
+          │   App Service / Instances   │
+          └──────────────┬──────────────┘
+                         │
+          ┌──────────────▼──────────────┐
+          │     FastAPI Application     │
+          │  ┌────────────────────────┐ │
+          │  │  Static Frontend (UI)  │ │
+          │  └────────────────────────┘ │
+          │  ┌────────────────────────┐ │
+          │  │   REST API Endpoints   │ │
+          │  └────────────┬───────────┘ │
+          └───────────────┼─────────────┘
+                          │
+          ┌───────────────▼─────────────┐
+          │     OpenWeatherMap API      │
+          └─────────────────────────────┘
+```
 
 ---
 
 ## Tech Stack
 
-- **Backend:** Python + FastAPI
-- **Frontend:** HTML/CSS/JS dashboard (served as static files via FastAPI)
-- **Weather Data:** OpenWeatherMap API
-- **Containerization:** Docker
-- **Dev Environment:** WSL2 (Ubuntu) + PyCharm Pro
-- **Version Control:** Git / GitHub
+| Layer | Technology |
+|---|---|
+| **Backend** | Python 3.11 + FastAPI |
+| **Frontend** | HTML / CSS / JavaScript (served via FastAPI static files) |
+| **Weather Data** | OpenWeatherMap API |
+| **Containerization** | Docker |
+| **Cloud Deployment** | Azure App Service + Azure Container Instances |
+| **CI/CD** | GitHub Actions (lint → test → build → push → deploy) |
+| **Infrastructure as Code** | Terraform |
+| **Dev Environment** | WSL2 (Ubuntu) + PyCharm Pro |
+| **Version Control** | Git / GitHub |
 
 ---
 
@@ -35,7 +63,7 @@ This project was built to practice real-world engineering skills in a contained,
 ### Prerequisites
 
 - Python 3.8+
-- Docker (recommended) or pip for local development
+- Docker (recommended for local parity with production)
 - OpenWeatherMap API key → [get one free here](https://openweathermap.org/api)
 
 ### Option 1: Run with Docker (recommended)
@@ -76,7 +104,7 @@ cp .env.example .env
 uvicorn main:app --reload
 ```
 
-API available at: `http://localhost:8000`  
+API available at: `http://localhost:8000`
 Interactive docs at: `http://localhost:8000/docs`
 
 ---
@@ -91,7 +119,15 @@ weather-fastapi/
 ├── Dockerfile           # Container build instructions
 ├── .dockerignore        # Files excluded from Docker build context
 ├── .env                 # Local environment variables (never committed)
+├── .env.example         # Environment variable template
 ├── .gitignore           # Git ignore rules
+├── terraform/           # Azure infrastructure definitions
+│   ├── main.tf
+│   ├── variables.tf
+│   └── outputs.tf
+├── .github/
+│   └── workflows/
+│       └── ci-cd.yml    # GitHub Actions pipeline
 └── README.md            # This file
 ```
 
@@ -143,20 +179,39 @@ GET /weather/city?city=Paris
 }
 ```
 
-Note: `geocoded_location` only appears in city-based search responses.
+> `geocoded_location` only appears in city-based search responses.
+
+---
+
+## CI/CD Pipeline
+
+Every push to `main` or `master` triggers the full GitHub Actions pipeline:
+
+```
+Push to main or master
+    │
+    ├── Lint (flake8 / ruff)
+    ├── Test (pytest)
+    ├── Build Docker image
+    ├── Push to Azure Container Registry
+    └── Deploy to Azure (App Service + Container Instances)
+```
+
+Infrastructure is defined and version-controlled in Terraform under `/terraform`, enabling reproducible, auditable Azure provisioning.
 
 ---
 
 ## Development Workflow
 
 ```
-feature branch → local dev & test → commit → pull request → merge to main
+feature branch → local dev & test → commit → pull request → merge to main → CI/CD auto-deploys
 ```
 
 1. Branch off `main` for each new feature or fix
 2. Develop and test locally (or in Docker)
 3. Write descriptive commit messages
 4. Open a pull request and review before merging
+5. Merge triggers the GitHub Actions pipeline automatically
 
 ---
 
@@ -165,21 +220,26 @@ feature branch → local dev & test → commit → pull request → merge to mai
 - [x] FastAPI backend with OpenWeatherMap integration
 - [x] Docker containerization
 - [x] Basic frontend dashboard (HTML/CSS/JS, served via FastAPI static files)
-- [ ] GitHub Actions CI/CD pipeline (lint, test, build)
-- [ ] Deploy to Azure (App Service or Container Instances)
-- [ ] Infrastructure as Code with Terraform
+- [x] GitHub Actions CI/CD pipeline (lint, test, build, push, deploy)
+- [x] Deploy to Azure (App Service + Container Instances)
+- [x] Infrastructure as Code with Terraform
 - [ ] Add forecast endpoint (multi-day weather data)
+- [ ] Unit test coverage expansion
+- [ ] Monitoring and alerting (Azure Monitor / Application Insights)
 
 ---
 
 ## Key Takeaways
 
-A few things this project helped solidify:
+Building this end-to-end sharpened several skills that translate directly to production engineering work:
 
-- How FastAPI handles async routes and automatic schema generation via Pydantic
-- Why environment variables matter and how `.env` + `.gitignore` protect secrets
-- The difference between building an image and running a container, and why that distinction matters for deployment
-- How a structured Git workflow scales from solo projects to team environments
+- **FastAPI & async Python** — how async routes work, how Pydantic drives automatic schema generation and validation, and how to serve a static frontend alongside a REST API from a single application
+- **Docker** — the distinction between building an image and running a container, how build context affects image size, and why containerization matters for deployment consistency
+- **CI/CD** — designing a pipeline that enforces code quality (lint, test) before any artifact is built or deployed, and how GitHub Actions integrates with Azure for automated delivery
+- **Infrastructure as Code** — provisioning cloud resources with Terraform rather than manually through the portal, making infrastructure reproducible and version-controlled
+- **Security fundamentals** — environment variables, `.env` + `.gitignore` patterns, and how secrets flow safely from local dev through CI/CD to production
+- **Git workflow** — structured branching, pull requests, and how a clean commit history supports both solo and team development
 
 ---
-# Updated via CI/CD
+
+*Built as part of a self-directed learning path toward automation engineering — focused on understanding the "why" behind every layer of the stack.*
