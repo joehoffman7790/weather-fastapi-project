@@ -1,7 +1,10 @@
 import os
+from functools import lru_cache
 from typing import Optional
 
 import httpx
+from azure.identity import DefaultAzureCredential
+from azure.keyvault.secrets import SecretClient
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -12,8 +15,17 @@ app = FastAPI()
 # Mount the static folder
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Load API key from environment
-API_KEY = os.getenv("OPENWEATHER_API_KEY")
+# Load API key from Key Vault
+@lru_cache
+def _get_api_key() -> str:
+    vault_name = os.environ["KEY_VAULT_NAME"]
+    vault_url = f"https://{vault_name}.vault.azure.net"
+    credential = DefaultAzureCredential()
+    client = SecretClient(vault_url=vault_url, credential=credential)
+    return client.get_secret("openweather-api-key").value
+
+
+API_KEY = _get_api_key()
 BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
 GEOCODING_URL = "http://api.openweathermap.org/geo/1.0/direct"
 
