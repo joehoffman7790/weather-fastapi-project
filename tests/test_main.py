@@ -1,11 +1,11 @@
-import os
+from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
-from main import app
-
-# Mock API key for testing
-os.environ["OPENWEATHER_API_KEY"] = "test_key_for_ci"
+# Patch get_api_key BEFORE importing the app, so the cached value is the mock.
+# This prevents any real Azure Key Vault calls during tests.
+with patch("main.get_api_key", return_value="test_key_for_ci"):
+    from main import app
 
 client = TestClient(app)
 
@@ -17,18 +17,18 @@ def test_read_root():
     assert "text/html" in response.headers["content-type"]
 
 
-def test_weather_by_coordinates():
+@patch("main.get_api_key", return_value="test_key_for_ci")
+def test_weather_by_coordinates(mock_get_key):
     """Test coordinate-based weather endpoint structure"""
-    # This will fail without real API key, but tests the endpoint exists
     response = client.get("/weather/40.7128/-74.0060")
-    # Should return 200 or 500 (API error), but not 404
+    # Should return 200 or 500 (API error from real OpenWeather call), but not 404
     assert response.status_code in [200, 500]
 
 
-def test_weather_by_city():
+@patch("main.get_api_key", return_value="test_key_for_ci")
+def test_weather_by_city(mock_get_key):
     """Test city-based weather endpoint structure"""
     response = client.get("/weather/city?city=London")
-    # Should return 200 or 500 (API error), but not 404
     assert response.status_code in [200, 500, 404]
 
 

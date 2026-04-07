@@ -1,7 +1,10 @@
 import os
+from functools import lru_cache
 from typing import Optional
 
 import httpx
+from azure.identity import DefaultAzureCredential
+from azure.keyvault.secrets import SecretClient
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -12,8 +15,18 @@ app = FastAPI()
 # Mount the static folder
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Load API key from environment
-API_KEY = os.getenv("OPENWEATHER_API_KEY")
+
+# Load API key from Key Vault
+@lru_cache
+def get_api_key() -> str:
+    """Fetch the OpenWeather API key from Key Vault. Cached after first call."""
+    vault_name = os.environ["KEY_VAULT_NAME"]
+    vault_url = f"https://{vault_name}.vault.azure.net"
+    credential = DefaultAzureCredential()
+    client = SecretClient(vault_url=vault_url, credential=credential)
+    return client.get_secret("openweather-api-key").value
+
+
 BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
 GEOCODING_URL = "http://api.openweathermap.org/geo/1.0/direct"
 
@@ -30,7 +43,7 @@ async def geocode_location(city: str, state: Optional[str] = None, country: Opti
 
     query = ",".join(query_parts)
 
-    params = {"q": query, "limit": 1, "appid": API_KEY}
+    params = {"q": query, "limit": 1, "appid": get_api_key()}
 
     async with httpx.AsyncClient() as client:
         try:
@@ -63,10 +76,10 @@ async def serve_frontend():
 async def get_weather(lat: float, lon: float):
     """Get current weather data for specific coordinates"""
 
-    if not API_KEY:
+    if not get_api_key():
         raise HTTPException(status_code=500, detail="API key not configured")
 
-    params = {"lat": lat, "lon": lon, "appid": API_KEY, "units": "imperial"}
+    params = {"lat": lat, "lon": lon, "appid": get_api_key(), "units": "imperial"}
 
     async with httpx.AsyncClient() as client:
         try:
@@ -87,14 +100,14 @@ async def get_weather_by_city(city: str, state: Optional[str] = None, country: O
     - /weather/city/Paris
     """
 
-    if not API_KEY:
+    if not get_api_key:
         raise HTTPException(status_code=500, detail="API key not configured")
 
     # Geocode the location
     location = await geocode_location(city, state, country)
 
     # Get weather for those coordinates
-    params = {"lat": location["lat"], "lon": location["lon"], "appid": API_KEY, "units": "imperial"}
+    params = {"lat": location["lat"], "lon": location["lon"], "appid": get_api_key(), "units": "imperial"}
 
     async with httpx.AsyncClient() as client:
         try:
