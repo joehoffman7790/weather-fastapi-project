@@ -62,10 +62,13 @@ The application is currently under active development as I continue refining inf
 
 ---
 
+## Project Structure
+
 ```
 weather-fastapi/
 ├── main.py
-├── static/
+├── static
+│   ├── index.html
 ├── requirements.txt
 ├── Dockerfile
 ├── .dockerignore
