@@ -1,6 +1,8 @@
 annotated-doc==0.0.4
 annotated-types==0.7.0
 anyio==4.11.0
+azure-identity
+azure-keyvault-secrets
 black==26.3.1
 certifi==2025.11.12
 click==8.3.1
