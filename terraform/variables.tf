@@ -7,13 +7,18 @@ variable "resource_group_name" {
 variable "location" {
   description = "Azure region for resources"
   type        = string
-  default     = "eastus"
+  default     = "westus2"
 }
 
 variable "environment" {
   description = "Environment name (dev, staging, prod)"
   type        = string
-  default     = "prod"
+  default     = "dev"
+
+  validation {
+    condition     = contains(["dev", "staging", "prod"], var.environment)
+    error_message = "Environment must be dev, staging, or prod."
+  }
 }
 
 variable "acr_name" {
@@ -29,7 +34,7 @@ variable "app_name" {
 variable "app_service_sku" {
   description = "App Service SKU (F1 = free, B1 = basic, S1 = standard)"
   type        = string
-  default     = "F1"
+  default     = "B1"
 }
 
 variable "openweather_api_key" {
