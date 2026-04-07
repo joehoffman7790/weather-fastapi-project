@@ -6,9 +6,13 @@
 ![Azure](https://img.shields.io/badge/Azure-Deployed-0078D4?style=flat&logo=microsoftazure&logoColor=white)
 ![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?style=flat&logo=githubactions&logoColor=white)
 ![Terraform](https://img.shields.io/badge/IaC-Terraform-7B42BC?style=flat&logo=terraform&logoColor=white)
-![Status](https://img.shields.io/badge/Status-Production-brightgreen?style=flat)
+![Status](https://img.shields.io/badge/Status-In%20Development-yellow?style=flat)
 
-A full-stack, containerized weather dashboard delivering real-time weather data via a FastAPI backend and a lightweight HTML/CSS/JS frontend. Built end-to-end as a hands-on learning project — from local development to Dockerized deployment on Azure, with a fully automated CI/CD pipeline managed through GitHub Actions and infrastructure provisioned via Terraform.
+A full-stack, containerized weather dashboard that delivers real-time weather data using a FastAPI backend and a lightweight HTML/CSS/JavaScript frontend.
+
+This project was built as a hands-on learning exercise to explore the full development-to-cloud lifecycle — from local development and Dockerization to deployment on Azure using Terraform and a CI/CD pipeline powered by GitHub Actions.
+
+The application is currently under active development as I continue refining infrastructure, security, and scalability.
 
 ---
 
@@ -60,21 +64,22 @@ A full-stack, containerized weather dashboard delivering real-time weather data 
 
 ```
 weather-fastapi/
-├── main.py              # FastAPI app — routes, API integration, static file serving
-├── static/              # Frontend — HTML/CSS/JS dashboard UI
-├── requirements.txt     # Python dependencies
-├── Dockerfile           # Container build instructions
-├── .dockerignore        # Files excluded from Docker build context
-├── .env                 # Local environment variables (never committed)
-├── .gitignore           # Git ignore rules
-├── terraform/           # Azure infrastructure definitions
+├── main.py
+├── static/
+├── requirements.txt
+├── Dockerfile
+├── .dockerignore
+├── .gitignore
+├── terraform/
+│   ├── providers.tf
+│   ├── locals.tf
 │   ├── main.tf
 │   ├── variables.tf
 │   └── outputs.tf
 ├── .github/
 │   └── workflows/
-│       └── ci-cd.yml    # GitHub Actions pipeline
-└── README.md            # This file
+│       └── ci-cd.yml
+└── README.md
 ```
 
 ---
@@ -131,16 +136,16 @@ GET /weather/city?city=Paris
 
 ## CI/CD Pipeline
 
-Every push to `main` or `master` triggers the full GitHub Actions pipeline:
+Every push to the main branch triggers a GitHub Actions workflow that automates the build and deployment process:
 
 ```
-Push to main or master
+Push to main
     │
-    ├── Lint (flake8 / ruff)
-    ├── Test (pytest)
+    ├── Lint (ruff / flake8)
+    ├── Run tests (pytest)
     ├── Build Docker image
-    ├── Push to Azure Container Registry
-    └── Deploy to Azure (App Service + Container Instances)
+    ├── Push image to Azure Container Registry (ACR)
+    └── Deploy container to Azure App Service
 ```
 
 ## Roadmap
@@ -152,22 +157,22 @@ Push to main or master
 - [x] Deploy to Azure (App Service + Container Instances)
 - [x] Infrastructure as Code with Terraform
 - [ ] Add forecast endpoint (multi-day weather data)
-- [ ] Unit test coverage expansion
+- [ ] Improve secret management with Azure Key Vault
 - [ ] Monitoring and alerting (Azure Monitor / Application Insights)
 
 ---
 
 ## Key Takeaways
 
-Building this end-to-end sharpened several skills that translate directly to production engineering work:
+This project helped me build and reinforce several skills that translate directly to real-world engineering work:
 
-- **FastAPI & async Python** — how async routes work, how Pydantic drives automatic schema generation and validation, and how to serve a static frontend alongside a REST API from a single application
-- **Docker** — the distinction between building an image and running a container, how build context affects image size, and why containerization matters for deployment consistency
-- **CI/CD** — designing a pipeline that enforces code quality (lint, test) before any artifact is built or deployed, and how GitHub Actions integrates with Azure for automated delivery
-- **Infrastructure as Code** — provisioning cloud resources with Terraform rather than manually through the portal, making infrastructure reproducible and version-controlled
-- **Security fundamentals** — environment variables, `.env` + `.gitignore` patterns, and how secrets flow safely from local dev through CI/CD to production
-- **Git workflow** — structured branching, pull requests, and how a clean commit history supports both solo and team development
+FastAPI & async Python — understanding async route handling, how Pydantic enables validation and schema generation, and serving a static frontend alongside an API
+Docker — the difference between building images and running containers, how build context impacts image size, and why containerization improves deployment consistency
+CI/CD — building a pipeline that runs linting and validation before deployment, and integrating GitHub Actions with Azure for automated delivery
+Infrastructure as Code — provisioning and managing Azure resources with Terraform instead of manual configuration, enabling reproducibility and version control
+Security fundamentals — handling environment variables safely, using .env for local development, and understanding how secrets move through deployment workflows
+Git workflow — using branching and pull requests to manage changes and maintain a clean, understandable commit history
 
 ---
 
-*Built as part of a self-directed learning path — focused on understanding the "why" behind every layer of the stack.*
+*Built as part of a self-directed learning path toward automation and DevOps engineering, with a focus on understanding how each layer of the stack fits together..*
