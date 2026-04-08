@@ -49,8 +49,6 @@ jobs:
           pip install pytest pytest-asyncio
 
       - name: Run tests
-        env:
-          OPENWEATHER_API_KEY: ${{ secrets.OPENWEATHER_API_KEY }}
         run: pytest tests/ -v
 
   # ── 3. BUILD + DEPLOY: azure/login + az webapp restart → webapps-deploy ──
