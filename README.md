@@ -20,7 +20,7 @@ The application is currently under active development as I continue refining inf
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│                    GitHub Actions CI/CD                   │
+│                    GitHub Actions CI/CD                  │
 │   Lint → Test → Build Docker Image → Push → Deploy       │
 └────────────────────────┬─────────────────────────────────┘
                          │
@@ -59,6 +59,7 @@ The application is currently under active development as I continue refining inf
 | **Infrastructure as Code** | Terraform |
 | **Dev Environment** | WSL2 (Ubuntu) + PyCharm Pro |
 | **Version Control** | Git / GitHub |
+| **Secret Management** | Azure Key Vault |
 
 ---
 
@@ -67,6 +68,9 @@ The application is currently under active development as I continue refining inf
 ```
 weather-fastapi/
 ├── main.py
+├── tests
+    ├── __init__.py
+    ├── __test_main.py  #Use this to test CI locally before committing and pushing changes
 ├── static
 │   ├── index.html
 ├── requirements.txt
@@ -79,6 +83,7 @@ weather-fastapi/
 │   ├── main.tf
 │   ├── variables.tf
 │   └── outputs.tf
+│   └── key_vault.tf
 ├── .github/
 │   └── workflows/
 │       └── ci-cd.yml
@@ -87,7 +92,7 @@ weather-fastapi/
 
 ---
 
-## API Endpoints
+## API Endpoints (More to come)
 
 | Method | Endpoint | Description | Parameters |
 |--------|----------|-------------|------------|
@@ -139,12 +144,12 @@ GET /weather/city?city=Paris
 
 ## CI/CD Pipeline
 
-Every push to the main branch triggers a GitHub Actions workflow that automates the build and deployment process:
+Every push to the master/main branch triggers a GitHub Actions workflow that automates the build and deployment process:
 
 ```
 Push to main
     │
-    ├── Lint (ruff / flake8)
+    ├── Lint (ruff)
     ├── Run tests (pytest)
     ├── Build Docker image
     ├── Push image to Azure Container Registry (ACR)
@@ -160,20 +165,25 @@ Push to main
 - [x] Deploy to Azure (App Service + Container Instances)
 - [x] Infrastructure as Code with Terraform
 - [ ] Add forecast endpoint (multi-day weather data)
-- [ ] Improve secret management with Azure Key Vault
+- [x] Improve secret management with Azure Key Vault
 - [ ] Monitoring and alerting (Azure Monitor / Application Insights)
 
 ---
 
 ## Key Takeaways
 
-This project helped me build and reinforce several skills that translate directly to real-world engineering work:
+This project has been helping me understand and build several skills that translate directly to real-world engineering work:
 
 FastAPI & async Python — understanding async route handling, how Pydantic enables validation and schema generation, and serving a static frontend alongside an API
+
 Docker — the difference between building images and running containers, how build context impacts image size, and why containerization improves deployment consistency
-CI/CD — building a pipeline that runs linting and validation before deployment, and integrating GitHub Actions with Azure for automated delivery
+
+CI/CD — building a pipeline that runs linting and testing/validation before deployment, and integrating GitHub Actions with Azure for automated delivery
+
 Infrastructure as Code — provisioning and managing Azure resources with Terraform instead of manual configuration, enabling reproducibility and version control
-Security fundamentals — handling environment variables safely, using .env for local development, and understanding how secrets move through deployment workflows
+
+Security fundamentals — handling environment variables safely, using .env for local development, and understanding how secrets move through deployment workflows utilizing Azure Key Vault
+
 Git workflow — using branching and pull requests to manage changes and maintain a clean, understandable commit history
 
 ---
