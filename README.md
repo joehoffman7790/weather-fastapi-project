@@ -187,5 +187,3 @@ Security fundamentals — handling environment variables safely, using .env for 
 Git workflow — using branching and pull requests to manage changes and maintain a clean, understandable commit history
 
 ---
-
-*Built as part of a self-directed learning path toward automation and DevOps engineering, with a focus on understanding how each layer of the stack fits together..*
