@@ -1,4 +1,4 @@
-# 🌤️ Weather FastAPI Dashboard
+# 🌤️ Weather Dashboard
 
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?style=flat&logo=fastapi&logoColor=white)
@@ -13,6 +13,8 @@ A full-stack, containerized weather dashboard that delivers real-time weather da
 This project was built as a hands-on learning exercise to explore the full development-to-cloud lifecycle — from local development and Dockerization to deployment on Azure using Terraform and a CI/CD pipeline powered by GitHub Actions.
 
 The application is currently under active development as I continue refining infrastructure, security, and scalability.
+
+Current version of Weather App: https://weather.hofflabs.live/
 
 ---
 
