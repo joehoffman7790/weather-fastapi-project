@@ -17,39 +17,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
-      - name: Install ruff
-        run: pip install ruff          # black is gone — ruff covers format checking too
-
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Install dependencies
+        run: uv sync --frozen
       - name: Lint with ruff
-        run: ruff check .
-
-      - name: Format check with ruff  # replaces: black --check .
-        run: ruff format --check .
+        run: uv run ruff check .
+      - name: Format check with ruff
+        run: uv run ruff format --check .
 
   # ── 2. Tests stay separate — no need to bundle with lint ──────────────────
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
       - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-          pip install pytest pytest-asyncio
-
+        run: uv sync --frozen
       - name: Run tests
-        run: pytest tests/ -v
+        run: uv run pytest tests/ -v
 
   # ── 3. BUILD + DEPLOY: azure/login + az webapp restart → webapps-deploy ──
   build-and-deploy:
