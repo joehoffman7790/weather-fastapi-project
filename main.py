@@ -123,31 +123,4 @@ async def get_weather_by_city(city: str, state: Optional[str] = None, country: O
             raise HTTPException(status_code=500, detail=f"Error fetching weather: {str(e)}")
 
 
-# @app.get("/")
-# async def serve_frontend():
-#     """Serve the frontend HTML"""
-#     return FileResponse("static/index.html")
-#
-#
-# @app.get("/weather/{lat}/{lon}")
-# async def get_weather(lat: float, lon: float):
-#     """Get current weather data for specific coordinates"""
-#
-#     if not API_KEY:
-#         raise HTTPException(status_code=500, detail="API key not configured")
-#
-#     params = {
-#         "lat": lat,
-#         "lon": lon,
-#         "appid": API_KEY,
-#         "units": "imperial"
-#     }
-#
-#     async with httpx.AsyncClient() as client:
-#         try:
-#             response = await client.get(BASE_URL, params=params)
-#             response.raise_for_status()
-#             return response.json()
-#         except httpx.HTTPError as e:
-#             raise HTTPException(status_code=500, detail=f"Error fetching weather: {str(e)}")
 #
