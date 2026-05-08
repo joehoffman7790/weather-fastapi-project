@@ -18,6 +18,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from weather.views import AboutUs, LatLong
+
 urlpatterns = [
     path("admin/", admin.site.urls),
+    # path('', AboutUs.as_view(),name="aboutus"),
+    path('weather/<str:lat>/<str:lon>', LatLong.as_view()),
+    path('weather', LatLong.as_view()),
 ]
