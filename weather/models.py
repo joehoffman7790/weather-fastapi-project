@@ -10,7 +10,9 @@ FORECAST_TTL = timedelta(hours=1)
 class Location(models.Model):
     name = models.CharField(max_length=100)
     country_code = models.CharField(max_length=2)
-    owm_city_id = models.IntegerField(unique=True)
+    owm_city_id = models.IntegerField(unique=True, null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
     last_queried = models.DateTimeField(auto_now=True)
 
     class Meta:
