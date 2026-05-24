@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 env:
   REGISTRY: weatherapiacregistry765.azurecr.io
@@ -50,7 +50,7 @@ jobs:
   build-and-deploy:
     needs: [ lint, test ]             # both must pass before deploy runs
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
       - uses: actions/checkout@v4
@@ -76,4 +76,4 @@ jobs:
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
-          
+
