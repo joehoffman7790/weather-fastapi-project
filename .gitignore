@@ -29,4 +29,4 @@ terraform/*.tfstate
 terraform/*.tfstate.backup
 terraform/.terraform.lock.hcl
 terraform/terraform.tfvars
-terraform/.terraform.tfstate.lock.info
+terraform/.terraform.tfstate.lock.infodb.sqlite3

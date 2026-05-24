@@ -75,3 +75,5 @@ jobs:
           app-name: weather-fastapi-joeh6790
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+          
