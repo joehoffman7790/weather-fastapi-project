@@ -67,6 +67,7 @@ jobs:
         with:
           context: .
           push: true
+          no-cache: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
       - name: Deploy to Azure Web App  # replaces: azure/login + az webapp restart
