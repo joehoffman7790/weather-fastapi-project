@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from weather.models import CurrentWeather, ForecastDay, Location
+from weather.models import CurrentWeather, ForecastDay, Location, SearchHistory
 
 
 @admin.register(Location)
@@ -19,4 +19,10 @@ class CurrentWeatherAdmin(admin.ModelAdmin):
 class ForecastDayAdmin(admin.ModelAdmin):
     list_display = ("location", "date", "temp_high_c", "temp_low_c", "condition")
     list_filter = ("date",)
+    list_select_related = ("location",)
+
+@admin.register(SearchHistory)
+class SearchHistoryAdmin(admin.ModelAdmin):
+    list_display = ("location", "search_type", "searched_at")
+    list_filter = ("search_type",)
     list_select_related = ("location",)
