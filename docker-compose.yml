@@ -16,5 +16,19 @@ services:
       timeout: 5s
       retries: 5
 
+  web:
+    build: .
+    container_name: weather-django
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgres://weather:${POSTGRES_PASSWORD}@postgres:5432/weather
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      OPENWEATHERMAP_API_KEY: ${OPENWEATHERMAP_API_KEY}
+      DEBUG: "False"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
 volumes:
   postgres-data:
