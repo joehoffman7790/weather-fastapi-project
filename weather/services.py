@@ -68,7 +68,7 @@ class WeatherService:
             },
             "forecast": [
                 {
-                    "date": day.date.isoformat(),
+                    "date": day.date,
                     "temp_high_c": day.temp_high_c,
                     "temp_high_f": round(day.temp_high_f, 1),
                     "temp_low_c": day.temp_low_c,

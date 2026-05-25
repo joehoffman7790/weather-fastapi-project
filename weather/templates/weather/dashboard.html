@@ -1,0 +1,127 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f0f4f8;
+            color: #2d3748;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        h1 {
+            margin: 0 0 25px;
+        }
+        .section-title {
+            color: #4a5568;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 6px 0;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #3182ce;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            margin-top: 10px;
+            transition: background 0.15s;
+        }
+        button:hover {
+            background: #2b6cb0;
+        }
+        .divider {
+            margin: 35px 0;
+            border-top: 2px solid #e2e8f0;
+            position: relative;
+        }
+        .divider span {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 0 14px;
+            color: #718096;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        .htmx-indicator {
+            display: none;
+            text-align: center;
+            padding: 10px;
+            color: #718096;
+        }
+        .htmx-request .htmx-indicator {
+            display: block;
+        }
+        .htmx-request.htmx-indicator {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌤️ Weather Dashboard</h1>
+
+        <!-- City Search -->
+        <div>
+            <h3 class="section-title">Search by City</h3>
+            <form
+                hx-get="{% url 'weather:dashboard-search' %}"
+                hx-target="#result"
+                hx-indicator="#loading"
+            >
+                <input type="text" name="city" placeholder="London" required>
+                <button type="submit">Search by City</button>
+            </form>
+        </div>
+
+        <div class="divider"><span>OR</span></div>
+
+        <!-- Coordinate Search -->
+        <div>
+            <h3 class="section-title">Search by Coordinates</h3>
+            <form
+                hx-get="{% url 'weather:dashboard-search' %}"
+                hx-target="#result"
+                hx-indicator="#loading"
+            >
+                <input type="number" name="lat" placeholder="51.5074" step="any" required>
+                <input type="number" name="lng" placeholder="-0.1278" step="any" required>
+                <button type="submit">Search by Coordinates</button>
+            </form>
+        </div>
+
+        <!-- Loading indicator -->
+        <div id="loading" class="htmx-indicator">Loading weather data...</div>
+
+        <!-- Where HTMX swaps in the result -->
+        <div id="result"></div>
+    </div>
+</body>
+</html>
