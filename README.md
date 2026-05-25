@@ -10,7 +10,7 @@
 ![Terraform](https://img.shields.io/badge/IaC-Terraform-7B42BC?style=flat&logo=terraform&logoColor=white)
 ![Status](https://img.shields.io/badge/Status-In_Development-yellow?style=flat)
 
-A full-stack weather dashboard in progress, being built with Django REST Framework to serve a dynamic frontend (Django templates + HTMX) and REST API from a single application. Will display current conditions and a 6-day forecast using OpenWeatherMap data.
+A full-stack weather dashboard in progress, being built with Django REST Framework to serve a dynamic frontend (Django templates + HTMX) and REST API from a single application. Will display current conditions and a 5-day forecast using OpenWeatherMap data.
 
 This project is a deliberate rewrite of an earlier FastAPI version, undertaken to learn Django's architecture, DRF, PostgreSQL, and class-based design patterns.
 
@@ -111,7 +111,7 @@ weather-django/
 |--------|----------|--------------------------------------------|------------|
 | `GET` | `/` | Serves the frontend dashboard              | None |
 | `GET` | `/api/weather/current/` | Current weather by coordinates             | `lat` (float), `lon` (float) |
-| `GET` | `/api/weather/forecast/` | 6-day forecast aggregated from 3-hour data | `lat` (float), `lon` (float) |
+| `GET` | `/api/weather/forecast/` | 5-day forecast aggregated from 3-hour data | `lat` (float), `lon` (float) |
 | `GET` | `/api/docs/` | Browsable API (DRF)                        | None |
 
 ### Response Format — Current Weather
@@ -162,7 +162,7 @@ Push to main
 - [ ] Bootstrap project with `uv` and Django
 - [ ] Configure DRF and PostgreSQL
 - [ ] Current weather endpoint
-- [ ] 6-day forecast endpoint (aggregate 3-hour OWM data → daily high/low)
+- [ ] 5-day forecast endpoint (aggregate 3-hour OWM data → daily high/low)
 - [ ] Django templates + HTMX frontend
 - [ ] Docker containerization
 - [ ] Terraform infrastructure (App Service, ACR, PostgreSQL, Key Vault)
