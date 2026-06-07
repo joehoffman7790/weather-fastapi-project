@@ -131,3 +131,13 @@ OPENWEATHERMAP_API_KEY = os.environ.get("OPENWEATHERMAP_API_KEY")
 
 # Static files configuration for production (whitenoise serves them from gunicorn)
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+USE_AZURE_SECRETS = os.environ.get("USE_AZURE_SECRETS", "true").lower() == "true"
+
+if USE_AZURE_SECRETS:
+    from config.azure_secrets import get_django_secret_key, get_openweather_api_key
+    SECRET_KEY = get_django_secret_key()
+    OPENWEATHER_API_KEY = get_openweather_api_key()
+else:
+    SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
+    OPENWEATHER_API_KEY = os.environ["OPENWEATHER_API_KEY"]
