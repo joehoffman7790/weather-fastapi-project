@@ -32,6 +32,10 @@ if USE_AZURE_SECRETS:
 
     SECRET_KEY = _LazySecret("DJANGO-SECRET-KEY")
     OPENWEATHERMAP_API_KEY = _LazySecret("OPENWEATHER-API-KEY")
+    from config.azure_secrets import get_django_secret_key, get_openweather_api_key
+
+    SECRET_KEY = get_django_secret_key()
+    OPENWEATHERMAP_API_KEY = get_openweather_api_key()
 else:
     SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
     OPENWEATHERMAP_API_KEY = os.environ["OPENWEATHERMAP_API_KEY"]
