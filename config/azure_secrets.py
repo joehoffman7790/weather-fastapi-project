@@ -80,6 +80,27 @@ def get_secret(secret_name: str) -> str:
         raise
 
 
+class _LazySecret:
+    """
+    Fetches the secret from Key Vault on first access, then caches the value.
+
+    This allows Gunicorn to start immediately without waiting for Key Vault auth.
+    The managed identity token is fully ready by the time the first request comes in.
+    """
+
+    def __init__(self, secret_name: str):
+        self._name = secret_name
+        self._value = None
+
+    def __str__(self) -> str:
+        if self._value is None:
+            self._value = get_secret(self._name)
+        return self._value
+
+    def __repr__(self) -> str:
+        return f"_LazySecret({self._name!r})"
+
+
 def get_openweather_api_key() -> str:
     """Convenience wrapper — fetches the OpenWeatherMap API key."""
     return get_secret("OPENWEATHER-API-KEY")
