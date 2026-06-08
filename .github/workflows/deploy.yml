@@ -49,7 +49,7 @@ jobs:
           DJANGO_SECRET_KEY: "test-secret-key-for-ci-only"
           OPENWEATHERMAP_API_KEY: "test"
           DATABASE_URL: "sqlite:////tmp/test.db"
-        run: uv run pytest tests/ -v
+        run: uv run pytest weather/tests.py -v
 
   # ── 3. Build + Deploy ──────────────────────────────────────────────────────
   build-and-deploy:

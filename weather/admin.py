@@ -21,6 +21,7 @@ class ForecastDayAdmin(admin.ModelAdmin):
     list_filter = ("date",)
     list_select_related = ("location",)
 
+
 @admin.register(SearchHistory)
 class SearchHistoryAdmin(admin.ModelAdmin):
     list_display = ("location", "search_type", "searched_at")

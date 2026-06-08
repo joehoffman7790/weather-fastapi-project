@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("weather", "0002_location_latitude_location_longitude_and_more"),
     ]

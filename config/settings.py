@@ -10,8 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
+
 import dj_database_url
 from dotenv import load_dotenv
 
@@ -28,6 +29,7 @@ USE_AZURE_SECRETS = os.environ.get("USE_AZURE_SECRETS", "true").lower() == "true
 
 if USE_AZURE_SECRETS:
     from config.azure_secrets import get_django_secret_key, get_openweather_api_key
+
     SECRET_KEY = get_django_secret_key()
     OPENWEATHERMAP_API_KEY = get_openweather_api_key()
 else:

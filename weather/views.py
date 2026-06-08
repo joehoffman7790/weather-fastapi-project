@@ -27,6 +27,7 @@ WEATHER_EMOJI = {
     "Tornado": "🌪️",
 }
 
+
 def _enrich_with_emoji(result: dict) -> dict:
     """Add emoji icons to current and forecast based on condition."""
     result["current"]["emoji"] = WEATHER_EMOJI.get(result["current"]["condition"], "🌡️")

@@ -15,13 +15,13 @@ Requirements:
     uv add azure-identity azure-keyvault-secrets
 """
 
-import os
 import logging
+import os
 from functools import lru_cache
 
+from azure.core.exceptions import ClientAuthenticationError, ResourceNotFoundError
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
-from azure.core.exceptions import ResourceNotFoundError, ClientAuthenticationError
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +70,9 @@ def get_secret(secret_name: str) -> str:
         logger.error(
             "Authentication failed when fetching secret '%s'. "
             "Locally: run `az login`. In production: check managed identity role assignment. "
-            "Error: %s", secret_name, e
+            "Error: %s",
+            secret_name,
+            e,
         )
         raise
     except ResourceNotFoundError:
