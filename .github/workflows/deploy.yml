@@ -7,12 +7,12 @@ on:
     branches: [ main ]
 
 env:
-  REGISTRY: weatherapiacregistry765.azurecr.io
-  IMAGE_NAME: weather-api
+  REGISTRY: ${{ secrets.REGISTRY }}
+  IMAGE_NAME: weatherdjango-app
 
 jobs:
 
-  # ── 1. SPLIT: lint is its own job now ─────────────────────────────────────
+  # ── 1. Lint ────────────────────────────────────────────────────────────────
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -30,7 +30,7 @@ jobs:
       - name: Format check with ruff
         run: uv run ruff format --check .
 
-  # ── 2. Tests stay separate — no need to bundle with lint ──────────────────
+  # ── 2. Test ────────────────────────────────────────────────────────────────
   test:
     runs-on: ubuntu-latest
     steps:
@@ -44,34 +44,42 @@ jobs:
       - name: Install dependencies
         run: uv sync --frozen
       - name: Run tests
+        env:
+          USE_AZURE_SECRETS: "false"
+          DJANGO_SECRET_KEY: "test-secret-key-for-ci-only"
+          OPENWEATHERMAP_API_KEY: "test"
+          DATABASE_URL: "sqlite:////tmp/test.db"
         run: uv run pytest tests/ -v
 
-  # ── 3. BUILD + DEPLOY: azure/login + az webapp restart → webapps-deploy ──
+  # ── 3. Build + Deploy ──────────────────────────────────────────────────────
   build-and-deploy:
-    needs: [ lint, test ]             # both must pass before deploy runs
+    needs: [ lint, test ]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Log in to Azure Container Registry
-        uses: docker/login-action@v3
+      - name: Log in to Azure
+        uses: azure/login@v2
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Log in to Azure Container Registry
+        run: az acr login --name ${{ secrets.ACR_NAME }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          platforms: linux/amd64
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
-      - name: Deploy to Azure Web App  # replaces: azure/login + az webapp restart
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: weather-fastapi-joeh6790
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          app-name: weatherdjango-app
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest

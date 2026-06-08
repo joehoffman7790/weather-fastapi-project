@@ -21,12 +21,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Load environment variables from .env file
 load_dotenv(BASE_DIR / ".env")
 
+# -----------------------------------------------------------------------
+# Secret fetching — Key Vault in production, .env for local dev
+# -----------------------------------------------------------------------
+USE_AZURE_SECRETS = os.environ.get("USE_AZURE_SECRETS", "true").lower() == "true"
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
+if USE_AZURE_SECRETS:
+    from config.azure_secrets import get_django_secret_key, get_openweather_api_key
+    SECRET_KEY = get_django_secret_key()
+    OPENWEATHERMAP_API_KEY = get_openweather_api_key()
+else:
+    SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
+    OPENWEATHERMAP_API_KEY = os.environ["OPENWEATHERMAP_API_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
@@ -79,8 +85,6 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 
 # Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
 DATABASES = {
     "default": dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
@@ -90,8 +94,6 @@ DATABASES = {
 
 
 # Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -109,8 +111,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/6.0/topics/i18n/
-
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "UTC"
@@ -120,24 +120,6 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
-
+# Static files
 STATIC_URL = "static/"
-
-
-# Third-party API keys
-OPENWEATHERMAP_API_KEY = os.environ.get("OPENWEATHERMAP_API_KEY")
-
-# Static files configuration for production (whitenoise serves them from gunicorn)
 STATIC_ROOT = BASE_DIR / "staticfiles"
-
-USE_AZURE_SECRETS = os.environ.get("USE_AZURE_SECRETS", "true").lower() == "true"
-
-if USE_AZURE_SECRETS:
-    from config.azure_secrets import get_django_secret_key, get_openweather_api_key
-    SECRET_KEY = get_django_secret_key()
-    OPENWEATHER_API_KEY = get_openweather_api_key()
-else:
-    SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
-    OPENWEATHER_API_KEY = os.environ["OPENWEATHER_API_KEY"]

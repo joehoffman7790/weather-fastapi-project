@@ -16,10 +16,7 @@ RUN uv sync --frozen --no-dev
 # Copy the rest of the app
 COPY . .
 
-# Collect static files (Django admin CSS, etc.)
-RUN /app/.venv/bin/python manage.py collectstatic --noinput
-
 EXPOSE 8000
 
-# Use the entrypoint script to run migrations then start gunicorn
-CMD ["/app/entrypoint.sh"]
+# Start gunicorn directly — no entrypoint script
+CMD ["/app/.venv/bin/gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "120", "--access-logfile", "-", "--error-logfile", "-"]

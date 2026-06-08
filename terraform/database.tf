@@ -1,17 +1,18 @@
 # Azure Database for PostgreSQL Flexible Server
 resource "azurerm_postgresql_flexible_server" "db" {
-  name                   = "${var.prefix}-db"
-  resource_group_name    = azurerm_resource_group.rg.name
-  location               = azurerm_resource_group.rg.location
-  version                = "16"
-  administrator_login    = var.postgres_user
-  administrator_password = var.postgres_password
-  sku_name               = "B_Standard_B1ms" # Burstable B1ms — cheapest Flexible Server tier
-  storage_mb             = 32768             # 32 GB minimum
-
-  # Public access enabled so App Service can reach it
-  # We lock it down via firewall rules below
+  name                          = "${var.prefix}-db"
+  resource_group_name           = azurerm_resource_group.rg.name
+  location                      = azurerm_resource_group.rg.location
+  version                       = "16"
+  administrator_login           = var.postgres_user
+  administrator_password        = var.postgres_password
+  sku_name                      = "B_Standard_B1ms"
+  storage_mb                    = 32768
   public_network_access_enabled = true
+
+  lifecycle {
+    ignore_changes = [zone]
+  }
 
   tags = local.common_tags
 }
