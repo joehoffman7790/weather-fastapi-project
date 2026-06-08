@@ -28,6 +28,10 @@ load_dotenv(BASE_DIR / ".env")
 USE_AZURE_SECRETS = os.environ.get("USE_AZURE_SECRETS", "true").lower() == "true"
 
 if USE_AZURE_SECRETS:
+    from config.azure_secrets import _LazySecret
+
+    SECRET_KEY = _LazySecret("DJANGO-SECRET-KEY")
+    OPENWEATHERMAP_API_KEY = _LazySecret("OPENWEATHER-API-KEY")
     from config.azure_secrets import get_django_secret_key, get_openweather_api_key
 
     SECRET_KEY = get_django_secret_key()
