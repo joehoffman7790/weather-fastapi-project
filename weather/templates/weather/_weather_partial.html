@@ -1,0 +1,46 @@
+{% if error %}
+    <div style="margin-top: 20px; padding: 15px; background: #fed7d7; color: #742a2a; border-radius: 6px;">
+        <strong>Error:</strong> {{ error }}
+    </div>
+{% else %}
+    <div style="margin-top: 25px; padding: 25px; background: #ebf8ff; border-radius: 8px;">
+        <h2 style="margin-top: 0; color: #2c5282;">
+            {{ data.location.name }}{% if data.location.country_code %}, {{ data.location.country_code }}{% endif %}
+        </h2>
+
+        <!-- Current Weather -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div>
+                <div style="font-size: 3.5em; font-weight: bold; color: #2c5282;">
+                    {{ data.current.temp_f|floatformat:0 }}°F
+                </div>
+                <div style="color: #4a5568;">Feels like {{ data.current.feels_like_f|floatformat:0 }}°F</div>
+                <div style="color: #4a5568; margin-top: 8px; text-transform: capitalize;">
+                    {{ data.current.condition }}
+                </div>
+            </div>
+            <div style="font-size: 5em; line-height: 1;">{{ data.current.emoji }}</div>
+        </div>
+
+        <!-- Stats -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; padding: 15px; background: white; border-radius: 6px;">
+            <div><strong>Humidity:</strong> {{ data.current.humidity }}%</div>
+            <div><strong>Wind:</strong> {{ data.current.wind_speed_mph|floatformat:0 }} mph</div>
+        </div>
+
+        <!-- 5-Day Forecast -->
+        <h3 style="color: #2c5282; margin-bottom: 10px;">5-Day Forecast</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px;">
+            {% for day in data.forecast|slice:":5" %}
+                <div style="background: white; padding: 12px; border-radius: 6px; text-align: center;">
+                    <div style="font-weight: 600; color: #4a5568; font-size: 0.9em;">
+                        {{ day.date|date:"M j, Y" }}
+                    </div>
+                    <div style="font-size: 2.5em; line-height: 1.2;">{{ day.emoji }}</div>
+                    <div style="color: #2c5282; font-weight: 600;">{{ day.temp_high_f|floatformat:0 }}°</div>
+                    <div style="color: #718096; font-size: 0.9em;">{{ day.temp_low_f|floatformat:0 }}°</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}

@@ -1,44 +1,47 @@
-variable "resource_group_name" {
-  description = "Name of the Azure resource group"
+variable "prefix" {
+  description = "Short prefix used to name all resources. Keep it lowercase, no spaces."
   type        = string
-  default     = "weather-api-rg"
+  default     = "weatherdjango"
 }
 
 variable "location" {
-  description = "Azure region for resources"
+  description = "Azure region for all resources."
   type        = string
   default     = "westus2"
 }
 
-variable "environment" {
-  description = "Environment name (dev, staging, prod)"
+variable "openweather_api_key" {
+  description = "OpenWeatherMap API key. Passed in via CI/CD secret or local tfvars — never committed."
   type        = string
-  default     = "dev"
-
-  validation {
-    condition     = contains(["dev", "staging", "prod"], var.environment)
-    error_message = "Environment must be dev, staging, or prod."
-  }
+  sensitive   = true
 }
 
-variable "acr_name" {
-  description = "Name of the Azure Container Registry (must be globally unique)"
+variable "django_secret_key" {
+  description = "Django SECRET_KEY. Generate with: python -c \"import secrets; print(secrets.token_urlsafe(50))\""
   type        = string
-}
-
-variable "app_name" {
-  description = "Name of the App Service (must be globally unique)"
-  type        = string
+  sensitive   = true
 }
 
 variable "app_service_sku" {
-  description = "App Service SKU (F1 = free, B1 = basic, S1 = standard)"
+  description = "App Service Plan SKU. B1 for basic, P1v2 for production."
   type        = string
   default     = "B1"
 }
 
-variable "openweather_api_key" {
-  description = "OpenWeather API key"
+variable "acr_sku" {
+  description = "ACR SKU. Basic is sufficient for a single app."
+  type        = string
+  default     = "Basic"
+}
+
+variable "postgres_user" {
+  description = "PostgreSQL administrator login. Must not be 'azure_superuser', 'admin', or 'administrator'."
+  type        = string
+  sensitive   = true
+}
+
+variable "postgres_password" {
+  description = "PostgreSQL administrator password. Min 8 chars, must include uppercase, lowercase, and a number."
   type        = string
   sensitive   = true
 }
