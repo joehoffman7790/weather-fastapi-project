@@ -1,88 +1,99 @@
-# 🌤️ Weather FastAPI Dashboard
+# 🌤️ Weather Dashboard
 
-![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat&logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?style=flat&logo=fastapi&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.13.12-3776AB?style=flat&logo=python&logoColor=white)
+![Django](https://img.shields.io/badge/Django-5.x-092E20?style=flat&logo=django&logoColor=white)
+![DRF](https://img.shields.io/badge/DRF-REST_Framework-ff1709?style=flat&logo=django&logoColor=white)
+![HTMX](https://img.shields.io/badge/HTMX-Frontend-3D72D7?style=flat)
 ![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=flat&logo=docker&logoColor=white)
 ![Azure](https://img.shields.io/badge/Azure-Deployed-0078D4?style=flat&logo=microsoftazure&logoColor=white)
-![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?style=flat&logo=githubactions&logoColor=white)
+![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub_Actions-2088FF?style=flat&logo=githubactions&logoColor=white)
 ![Terraform](https://img.shields.io/badge/IaC-Terraform-7B42BC?style=flat&logo=terraform&logoColor=white)
-![Status](https://img.shields.io/badge/Status-In%20Development-yellow?style=flat)
+![Status](https://img.shields.io/badge/Status-In_Development-yellow?style=flat)
 
-A full-stack, containerized weather dashboard that delivers real-time weather data using a FastAPI backend and a lightweight HTML/CSS/JavaScript frontend.
+A full-stack weather dashboard in progress, being built with Django REST Framework to serve a dynamic frontend (Django templates + HTMX) and REST API from a single application. Will display current conditions and a 5-day forecast using OpenWeatherMap data.
 
-This project was built as a hands-on learning exercise to explore the full development-to-cloud lifecycle — from local development and Dockerization to deployment on Azure using Terraform and a CI/CD pipeline powered by GitHub Actions.
-
-The application is currently under active development as I continue refining infrastructure, security, and scalability.
+This project is a deliberate rewrite of an earlier FastAPI version, undertaken to learn Django's architecture, DRF, PostgreSQL, and class-based design patterns.
 
 ---
 
 ## Architecture Overview
-
 ```
 ┌──────────────────────────────────────────────────────────┐
 │                    GitHub Actions CI/CD                  │
-│   Lint → Test → Build Docker Image → Push → Deploy       │
+│        Lint → Test → Build Docker Image → Push → Deploy  │
 └────────────────────────┬─────────────────────────────────┘
                          │
           ┌──────────────▼──────────────┐
-          │        Azure Container      │
-          │   App Service / Instances   │
+          │      Azure App Service      │
           └──────────────┬──────────────┘
                          │
           ┌──────────────▼──────────────┐
-          │     FastAPI Application     │
+          │      Django Application     │
           │  ┌────────────────────────┐ │
-          │  │  Static Frontend (UI)  │ │
+          │  │  Templates + HTMX UI   │ │
           │  └────────────────────────┘ │
           │  ┌────────────────────────┐ │
-          │  │   REST API Endpoints   │ │
+          │  │   DRF REST Endpoints   │ │
           │  └────────────┬───────────┘ │
           └───────────────┼─────────────┘
                           │
           ┌───────────────▼─────────────┐
           │     OpenWeatherMap API      │
           └─────────────────────────────┘
+                          │
+          ┌───────────────▼─────────────┐
+          │  Azure Database (PostgreSQL)│
+          └─────────────────────────────┘
 ```
-
----
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| **Backend** | Python 3.11 + FastAPI |
-| **Frontend** | HTML / CSS / JavaScript (served via FastAPI static files) |
-| **Weather Data** | OpenWeatherMap API |
-| **Containerization** | Docker |
-| **Cloud Deployment** | Azure App Service + Azure Container Instances |
-| **CI/CD** | GitHub Actions (lint → test → build → push → deploy) |
-| **Infrastructure as Code** | Terraform |
-| **Dev Environment** | WSL2 (Ubuntu) + PyCharm Pro |
-| **Version Control** | Git / GitHub |
-| **Secret Management** | Azure Key Vault |
+| Layer | Technology                                                 |
+|---|------------------------------------------------------------|
+| **Backend** | Python 3.13.12 + Django + Django REST Framework            |
+| **Frontend** | Django Templates + HTMX                                    |
+| **Database** | PostgreSQL (Azure Database for PostgreSQL Flexible Server) |
+| **Weather Data** | OpenWeatherMap API (current + 3-hour forecast)             |
+| **Containerization** | Docker                                                     |
+| **Cloud Deployment** | Azure App Service + Azure Container Registry               |
+| **CI/CD** | GitHub Actions (lint → test → build → push → deploy)       |
+| **Infrastructure as Code** | Terraform                                                  |
+| **Secret Management** | Azure Key Vault (managed identity)                         |
+| **Package Management** | uv + pyproject.toml                                        |
+| **Linting** | ruff                                                       |
+| **Dev Environment** | macOS + PyCharm Pro                                        |
+| **Version Control** | Git / GitHub                                               |
 
 ---
 
-## Project Structure
-
 ```
-weather-fastapi/
-├── main.py
-├── tests
-    ├── __init__.py
-    ├── __test_main.py  #Use this to test CI locally before committing and pushing changes
-├── static
-│   ├── index.html
-├── requirements.txt
+weather-django/
+├── manage.py
+├── pyproject.toml
 ├── Dockerfile
 ├── .dockerignore
 ├── .gitignore
+├── weather/                  # Django app
+│   ├── models.py
+│   ├── views.py
+│   ├── serializers.py
+│   ├── urls.py
+│   └── templates/
+│       └── weather/
+│           └── index.html
+├── config/                   # Django project config
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── tests/
+│   ├── __init__.py
+│   └── test_views.py
 ├── terraform/
 │   ├── providers.tf
 │   ├── locals.tf
 │   ├── main.tf
 │   ├── variables.tf
-│   └── outputs.tf
+│   ├── outputs.tf
 │   └── key_vault.tf
 ├── .github/
 │   └── workflows/
@@ -90,61 +101,51 @@ weather-fastapi/
 └── README.md
 ```
 
+> **Note:** Structure will update as the rewrite progresses.
+
 ---
 
-## API Endpoints (More to come)
+## API Endpoints
 
-| Method | Endpoint | Description | Parameters |
-|--------|----------|-------------|------------|
-| `GET` | `/` | Serves the HTML frontend dashboard | None |
-| `GET` | `/weather/{lat}/{lon}` | Current weather by coordinates (JSON) | `lat` (float), `lon` (float) |
-| `GET` | `/weather/city` | Current weather by city name (JSON) | `city` (required), `state` (optional), `country` (optional) |
-| `GET` | `/docs` | Auto-generated interactive API docs (Swagger UI) | None |
+| Method | Endpoint | Description                                | Parameters |
+|--------|----------|--------------------------------------------|------------|
+| `GET` | `/` | Serves the frontend dashboard              | None |
+| `GET` | `/api/weather/current/` | Current weather by coordinates             | `lat` (float), `lon` (float) |
+| `GET` | `/api/weather/forecast/` | 5-day forecast aggregated from 3-hour data | `lat` (float), `lon` (float) |
+| `GET` | `/api/docs/` | Browsable API (DRF)                        | None |
 
-### Examples
+### Response Format — Current Weather
 
-**Search by coordinates:**
-```
-GET /weather/40.7128/-74.0060
-```
-
-**Search by city:**
-```
-GET /weather/city?city=London&country=UK
-GET /weather/city?city=Austin&state=TX&country=US
-GET /weather/city?city=New York&state=NY&country=US
-GET /weather/city?city=Paris
-```
-
-**Response Format:**
 ```json
 {
-  "coord": {"lon": -74.006, "lat": 40.7128},
-  "weather": [{"id": 800, "main": "Clear", "description": "clear sky"}],
-  "main": {
-    "temp": 33.57,
-    "feels_like": 24.96,
-    "humidity": 66
-  },
-  "wind": {"speed": 11.5},
-  "name": "New York",
-  "geocoded_location": {
-    "name": "New York",
-    "state": "New York",
-    "country": "US",
-    "lat": 40.7128,
-    "lon": -74.006
-  }
+  "location": "New York, NY, US",
+  "temperature": 33.6,
+  "feels_like": 25.0,
+  "humidity": 66,
+  "description": "clear sky",
+  "wind_speed": 11.5
 }
 ```
 
-> `geocoded_location` only appears in city-based search responses.
+### Response Format — 5-Day Forecast
+
+```json
+[
+  {
+    "date": "2025-06-01",
+    "high": 35.2,
+    "low": 22.1,
+    "description": "partly cloudy"
+  },
+  ...
+]
+```
 
 ---
 
 ## CI/CD Pipeline
 
-Every push to the master/main branch triggers a GitHub Actions workflow that automates the build and deployment process:
+Every push to `main` triggers a GitHub Actions workflow:
 
 ```
 Push to main
@@ -158,32 +159,30 @@ Push to main
 
 ## Roadmap
 
-- [x] FastAPI backend with OpenWeatherMap integration
-- [x] Docker containerization
-- [x] Basic frontend dashboard (HTML/CSS/JS, served via FastAPI static files)
-- [x] GitHub Actions CI/CD pipeline (lint, test, build, push, deploy)
-- [x] Deploy to Azure (App Service + Container Instances)
-- [x] Infrastructure as Code with Terraform
-- [ ] Add forecast endpoint (multi-day weather data)
-- [x] Improve secret management with Azure Key Vault
-- [ ] Monitoring and alerting (Azure Monitor / Application Insights)
+- [ ] Bootstrap project with `uv` and Django
+- [ ] Configure DRF and PostgreSQL
+- [ ] Current weather endpoint
+- [ ] 5-day forecast endpoint (aggregate 3-hour OWM data → daily high/low)
+- [ ] Django templates + HTMX frontend
+- [ ] Docker containerization
+- [ ] Terraform infrastructure (App Service, ACR, PostgreSQL, Key Vault)
+- [ ] GitHub Actions CI/CD pipeline
+- [ ] Custom subdomain + SSL (Azure)
 
 ---
 
 ## Key Takeaways
 
-This project has been helping me understand and build several skills that translate directly to real-world engineering work:
+This rewrite builds on the foundation of the original FastAPI project and adds:
 
-FastAPI & async Python — understanding async route handling, how Pydantic enables validation and schema generation, and serving a static frontend alongside an API
+**Django & DRF** — learning how Django's class-based architecture organises a project, how DRF serializers map models to API responses, and how a single Django app can serve both a UI and a REST API
 
-Docker — the difference between building images and running containers, how build context impacts image size, and why containerization improves deployment consistency
+**PostgreSQL** — shifting from a stateless API (where every request hits OpenWeatherMap directly) to a relational database backed by Azure Database for PostgreSQL Flexible Server, provisioned and managed through Terraform
 
-CI/CD — building a pipeline that runs linting and testing/validation before deployment, and integrating GitHub Actions with Azure for automated delivery
+**HTMX** — adding frontend interactivity without a JavaScript framework, using server-rendered HTML fragments
 
-Infrastructure as Code — provisioning and managing Azure resources with Terraform instead of manual configuration, enabling reproducibility and version control
+***OOP in practice** — a deliberate step up from writing standalone scripts and procedural automation, using Django's class-based views and DRF generic views as a real-world introduction to object-oriented design patterns
 
-Security fundamentals — handling environment variables safely, using .env for local development, and understanding how secrets move through deployment workflows utilizing Azure Key Vault
-
-Git workflow — using branching and pull requests to manage changes and maintain a clean, understandable commit history
+**uv** — modern Python packaging and dependency management as a replacement for pip/requirements.txt
 
 ---

@@ -33,3 +33,4 @@ terraform/.terraform.tfstate.lock.info
 
 #DB Files
 db.sqlite3
+terraform/.terraform.tfstate.lock.infodb.sqlite3
